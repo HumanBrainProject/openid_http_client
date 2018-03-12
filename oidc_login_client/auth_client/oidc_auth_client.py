@@ -1,9 +1,9 @@
 import requests
 
-from oidc_login_client.auth_client.basic_auth_client import BasicAuthClient
+from oidc_login_client.auth_client.auth_client import AbstractAuthClient
 
 
-class HBPOidcAuthClient(BasicAuthClient):
+class HBPOidcAuthClient(AbstractAuthClient):
     host = 'https://services.humanbrainproject.eu/oidc'
     user_info_endpoint = 'userinfo'
     authorize_endpoint = 'authorize'
@@ -80,6 +80,10 @@ class HBPOidcAuthClient(BasicAuthClient):
         :param old_token: previous token
         :return: the refreshed token
         """
+        if self.client_id is None and self.client_secret is None:
+            raise Exception('Error Client ID and Client Secret not set properly. '
+                            'Maybe you should try with using the set_client_credentials method, '
+                            'before calling this method.')
         params = {
             'client_id': self.client_id,
             'client_secret': self.client_secret,
