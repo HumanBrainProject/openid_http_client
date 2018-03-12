@@ -1,23 +1,28 @@
 import requests
 
-from oidc_login_client.oidc_auth import OidcAuth
+from oidc_login_client.auth_client.basic_auth_client import BasicAuthClient
 
 
-class HBPOidcLogin(object):
-    refresh_token_file_path = 'refresh_token'
-    user_info_endpoint = 'userinfo'
+class HBPOidcAuthClient(BasicAuthClient):
     host = 'https://services.humanbrainproject.eu/oidc'
+    user_info_endpoint = 'userinfo'
     authorize_endpoint = 'authorize'
     token_endpoint = 'token'
-    internal_auth_endpoint = 'http://localhost:5000/auth'
+    refresh_token_file_path = 'refresh_token'
+    scope = 'openid profile offline_access'
 
-    def __init__(self, client_id, client_secret, redirect_uri,
-                 scope='openid profile offline_access'):
-        self.scope = scope
-        self.redirect_uri = redirect_uri
+    def __init__(self, token=None):
+        self.client_secret = None
+        self.client_id = None
+        if token is not None and self.validate_token(token) :
+            self.save_token(token)
+            self.token = token
+        else:
+            self.token = self._get_refresh_token_from_file()
+
+    def set_client_credentials(self,client_id, client_secret):
         self.client_secret = client_secret
         self.client_id = client_id
-        self.refresh_token = self._get_refresh_token_from_file()
 
     def _get_refresh_token_from_file(self):
         try:
@@ -26,17 +31,17 @@ class HBPOidcLogin(object):
         except Exception as e:
             return None
 
-    def exchange_code_for_token(self, code):
-        token = self.request_refresh_token(code)
+    def exchange_code_for_token(self, code, redirect_uri):
+        token = self.request_refresh_token(code, redirect_uri)
         self.save_token(token)
         self.refresh_token = token
 
-    def request_refresh_token(self, code):
+    def request_refresh_token(self, code, redirect_uri):
         params = {
             'code': code,
             'client_id': self.client_id,
             'client_secret': self.client_secret,
-            'redirect_uri': self.redirect_uri,
+            'redirect_uri': redirect_uri,
             'access_type': 'offline',
             'grant_type': 'authorization_code'
         }
@@ -53,23 +58,23 @@ class HBPOidcLogin(object):
             return None
 
     def get_token(self):
-        if self.refresh_token is None:
+        if self.token is None:
             raise Exception(
                 'No refresh token. Please use the exchange_code_for_token method beforehand')
-        return self.refresh_token
+        return self.token
 
     def get_headers(self):
-        if self.refresh_token is None:
+        if self.token is None:
             raise Exception(
                 'No refresh token. Please use the exchange_code_for_token method beforehand')
-        return {'Authorization': 'Bearer {}'.format(self.refresh_token)}
+        return {'Authorization': 'Bearer {}'.format(self.token)}
 
     def validate_token(self, token):
         headers = {'Authorization': 'Bearer {}'.format(token)}
         res = requests.get('{}/{}'.format(self.host, self.user_info_endpoint), headers=headers)
         return res.status_code < 300
 
-    def new_refresh_token(self, old_token=None):
+    def refresh_token(self, old_token=None):
         """
         To refresh the token
         :param old_token: previous token
@@ -84,14 +89,16 @@ class HBPOidcLogin(object):
         res = requests.get('{}/{}'.format(self.host, self.token_endpoint), params=params)
         token = res.json()['refresh_token']
         self.save_token(token)
-        self.refresh_token = token
+        self.token = token
         return token
 
 
-oidc = HBPOidcLogin('nexus-dev',
-                        'AOpPGrGm20-pzwHioko2EkvAhIm11YP9K-fAFnJou_Of-y-lu6T-M_UBEr04OmetcKNUcHAiVHuvCuCA_aZnqRA',
-                        'http://localhost')
-
+# oidc = HBPOidcAuthClient()
+#
+# oidc.set_client_credentials('nexus-dev',
+#                         'AOpPGrGm20-pzwHioko2EkvAhIm11YP9K-fAFnJou_Of-y-lu6T-M_UBEr04OmetcKNUcHAiVHuvCuCA_aZnqRA')
+#
+# oidc.exchange_code_for_token('66kgwN', 'http://localhost')
 
 # oidc.exchange_code_for_token('mElaNo')
 
