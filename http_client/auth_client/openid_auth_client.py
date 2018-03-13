@@ -1,42 +1,56 @@
 import os
 import requests
+from requests import Request
 
-from stat import S_IREAD, S_IWRITE
 from http_client.auth_client.auth_client import AbstractAuthClient
 
 
-class HBPOidcAuthClient(AbstractAuthClient):
-    host = 'https://services.humanbrainproject.eu/oidc'
-    user_info_endpoint = 'userinfo'
-    authorize_endpoint = 'authorize'
-    token_endpoint = 'token'
-    refresh_token_file_path = 'refresh_token'
+class OpenIDAuthClient(AbstractAuthClient):
+    endpoints = {
+        'configuration': '.well-known/openid-configuration'
+    }
+
     scope = 'openid profile offline_access'
 
-    def __init__(self, refresh_token=None):
-        self.client_secret = None
-        self.client_id = None
+    def __init__(self, openid_host, client_secret=None, client_id=None, refresh_token=None,
+                 refresh_token_file_path='refresh_token'):
+        self.host = openid_host
+        self.client_secret = client_secret
+        self.client_id = client_id
+        self.refresh_token_file_path = refresh_token_file_path
         if refresh_token is not None and self.validate_token(refresh_token):
             self.save_token(refresh_token)
             self.token = refresh_token
         else:
             self.token = self._get_refresh_token_from_file()
 
+        self.endpoints = self._fetch_endpoints()
+
     def set_client_credentials(self, client_id, client_secret):
         self.client_secret = client_secret
         self.client_id = client_id
+
+    def _fetch_endpoints(self):
+        res = self.__http_requests('get',
+                                   '{}/{}'.format(self.host, self.endpoints['configuration']))
+        j = res.json()
+        result = dict()
+        result['userinfo'] = j['userinfo_endpoint']
+        result['token'] = j['token_endpoint']
+        return result
 
     def _get_refresh_token_from_file(self):
         try:
             with open(self.refresh_token_file_path) as refresh_token_file:
                 return refresh_token_file.readline()
         except Exception as e:
+            print e
             return None
 
     def save_token(self, token):
         try:
             with open(self.refresh_token_file_path, 'wt') as refresh_token_file:
-                os.chmod(self.refresh_token_file_path,  0o600)
+                os.chmod(self.refresh_token_file_path, 0o600)
                 refresh_token_file.write(token)
         except Exception as e:
             print e
@@ -57,7 +71,8 @@ class HBPOidcAuthClient(AbstractAuthClient):
             'grant_type': 'authorization_code'
         }
 
-        res = requests.get('{}/{}'.format(self.host, self.token_endpoint), params=params)
+        res = self.__http_requests('get', '{}/{}'.format(self.host, self.endpoints['token']),
+                                   params=params)
         if res.status_code == 200:
             return res.json()['refresh_token']
         else:
@@ -77,7 +92,8 @@ class HBPOidcAuthClient(AbstractAuthClient):
 
     def validate_token(self, token):
         headers = {'Authorization': 'Bearer {}'.format(token)}
-        res = requests.get('{}/{}'.format(self.host, self.user_info_endpoint), headers=headers)
+        res = self.__http_requests('get', '{}/{}'.format(self.host, self.endpoints['userinfo']),
+                                   headers=headers)
         return res.status_code < 300
 
     def refresh_token(self, old_token=None):
@@ -96,7 +112,8 @@ class HBPOidcAuthClient(AbstractAuthClient):
             'refresh_token': self.get_token() if old_token is None else old_token,
             'grant_type': 'refresh_token'
         }
-        res = requests.get('{}/{}'.format(self.host, self.token_endpoint), params=params)
+        res = self.__http_requests('get', '{}/{}'.format(self.host, self.endpoints['token']),
+                                   params=params)
         if res.status_code == 200:
             token = res.json()['refresh_token']
             self.save_token(token)
@@ -105,20 +122,10 @@ class HBPOidcAuthClient(AbstractAuthClient):
         else:
             raise Exception('Could not refresh the token. {}'.format(res.content))
 
-# oidc = HBPOidcAuthClient()
-#
-# oidc.set_client_credentials('nexus-dev',
-#                         'AOpPGrGm20-pzwHioko2EkvAhIm11YP9K-fAFnJou_Of-y-lu6T-M_UBEr04OmetcKNUcHAiVHuvCuCA_aZnqRA')
-#
-# oidc.exchange_code_for_token('66kgwN', 'http://localhost')
+    def __http_requests(self, method_name, full_url, headers=None, params=None, data=None):
+        session = requests.session()
+        request = Request(method_name, full_url, headers, params=params, data=data)
 
-# oidc.exchange_code_for_token('mElaNo')
+        res = session.send(request.prepare())
 
-# def get_function(headers, params):
-#     req = requests.session()
-#     req.auth = OidcAuth(oidc)
-#     res = req.get('https://google.com', headers=headers)
-#     print res
-
-#
-# oidc.authentication_request()
+        return res

@@ -10,8 +10,8 @@ import json
 LOGGER = logging.getLogger(__package__)
 CURL_LOGGER = logging.getLogger("curl")
 
-class HttpClient(object):
 
+class HttpClient(object):
     headers = {}
 
     def __init__(self, endpoint, prefix, auth_client=None, raw=False):
@@ -33,7 +33,8 @@ class HttpClient(object):
         return full_url
 
     def transform_url_to_defined_endpoint(self, provided_by_nexus):
-        provided_by_nexus = provided_by_nexus[provided_by_nexus.find(self._prefix)+len(self._prefix):]
+        provided_by_nexus = provided_by_nexus[
+                            provided_by_nexus.find(self._prefix) + len(self._prefix):]
         return self._create_full_url(provided_by_nexus)
 
     def _handle_response(self, response):
@@ -68,21 +69,30 @@ class HttpClient(object):
                 error.response = response
                 raise error
             elif response.status_code > 401:
-                LOGGER.error("ERROR {} {}: {} {}".format(method_name.upper(),response.status_code,  full_url, response))
+                LOGGER.error(
+                    "ERROR {} {}: {} {}".format(method_name.upper(), response.status_code, full_url,
+                                                response))
             elif response.status_code == 401 and can_retry:
                 LOGGER.error(
-                    "ERROR - Refreshing token {} {}: {} {}".format(method_name.upper(), response.status_code, full_url,
-                                                response))
+                    "ERROR - Refreshing token {} {}: {} {}".format(method_name.upper(),
+                                                                   response.status_code, full_url,
+                                                                   response))
                 if self.auth_client is not None:
                     self.auth_client.refresh_token()
-                    self._request(method_name, endpoint_url, data, original_headers, can_retry=False)
+                    self._request(method_name, endpoint_url, data, original_headers,
+                                  can_retry=False)
             else:
-                LOGGER.debug("SUCCESS {} {}: {} {}".format(method_name.upper(), response.status_code, full_url, json.dumps(data)))
+                LOGGER.debug(
+                    "SUCCESS {} {}: {} {}".format(method_name.upper(), response.status_code,
+                                                  full_url, json.dumps(data)))
             return self._handle_response(response)
         except HTTPError as e:
             LOGGER.debug('request:%s %s\n%r', method_name, full_url, data)
-            LOGGER.error("ERROR {} ({}): {} {} {} {}".format(method_name.upper(), e.response.status_code, full_url, json.dumps(data), e.response.content, e.response.text))
-            raise(e)
+            LOGGER.error(
+                "ERROR {} ({}): {} {} {} {}".format(method_name.upper(), e.response.status_code,
+                                                    full_url, json.dumps(data), e.response.content,
+                                                    e.response.text))
+            raise (e)
 
     @staticmethod
     def _direct_request(method_name, full_url, data=None, headers=None):

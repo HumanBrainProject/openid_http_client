@@ -1,4 +1,4 @@
-from http_client.auth_client import AbstractAuthClient
+from http_client.auth_client.auth_client import AbstractAuthClient
 
 
 class BasicAuthClient(AbstractAuthClient):

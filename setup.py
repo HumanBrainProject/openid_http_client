@@ -9,5 +9,11 @@ setup(
     version='0.0.1',
     packages=['http_client', 'http_client.auth_client', 'http_client.test'],
     install_requires = reqs,
-    scripts=['manage.py']
+    scripts=['manage.py'],
+    description = 'HTTP Client with auth for Pyxus',
+    author = 'HPB Team',
+    author_email = 'platform@humanbrainproject.eu',
+    keywords = ['pyxus', 'http', 'client'],
+    classifiers = []
+
 )
