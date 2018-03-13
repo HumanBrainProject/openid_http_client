@@ -10,7 +10,7 @@ PIP := $(VIRTUAL_ENV)/bin/pip
 PYTHON := $(VIRTUAL_ENV)/bin/python
 MANAGE := $(PYTHON) $(SRC_PATH)/manage.py
 PIP_CACHE := $(CURDIR)/pip-cache
-DOC_REQ_FILE_PATH := $(SRC_PATH)/requirements_documentation.txt
+DOC_REQ_FILE_PATH := $(MODULE_PATH)/requirements_documentation.txt
 DOC_PATH := $(CURDIR)/docs
 DOC_SOURCE_PATH := $(DOC_PATH)/source
 DOC_BUILD_PATH := $(DOC_PATH)/build
@@ -80,5 +80,4 @@ doc-install: virtualenv $(DOC_REQ_FILE_PATH)
 package:
 	cd $(SRC_PATH) && \
 	python $(SRC_PATH)/setup.py sdist
-	python $(SRC_PATH)/setup.py bdist_wheel --universal
 
