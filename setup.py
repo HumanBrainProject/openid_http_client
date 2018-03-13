@@ -7,7 +7,7 @@ reqs = [str(ir.req) for ir in install_reqs]
 setup(
     name='pyxus_http_client',
     version='0.0.1',
-    packages=['http_client', 'http_client.auth_client', 'http_client.test'],
+    packages=['http_client', 'http_client.auth_client'],
     install_requires = reqs,
     scripts=['manage.py'],
     description = 'HTTP Client with auth for Pyxus',
