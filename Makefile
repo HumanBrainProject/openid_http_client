@@ -1,6 +1,6 @@
-SRC_PATH := $(CURDIR)/kg_statistics
-MODULE_PATH := $(SRC_PATH)/kg_statistics
-PACKAGE := oidc_login_client
+SRC_PATH := $(CURDIR)/http_client
+MODULE_PATH := $(SRC_PATH)/http_client
+PACKAGE :=http_client
 
 REQ_FILE_PATH := $(SRC_PATH)/requirements.txt
 TEST_REQ_FILE_PATH := $(SRC_PATH)/requirements_extension_tests.txt
@@ -10,7 +10,6 @@ PIP := $(VIRTUAL_ENV)/bin/pip
 PYTHON := $(VIRTUAL_ENV)/bin/python
 MANAGE := $(PYTHON) $(SRC_PATH)/manage.py
 PIP_CACHE := $(CURDIR)/pip-cache
-PYXUS_REPO := git+https://github.com/HumanBrainProject/pyxus.git
 DOC_REQ_FILE_PATH := $(SRC_PATH)/requirements_documentation.txt
 DOC_PATH := $(CURDIR)/docs
 DOC_SOURCE_PATH := $(DOC_PATH)/source
@@ -57,7 +56,6 @@ endif
 	cp .env.sample .env
 
 install: virtualenv $(REQ_FILE_PATH) .env
-	$(PIP) install $(pip_caching_option) $(PYXUS_REPO) --upgrade
 	$(PIP) install $(pip_caching_option) -r $(REQ_FILE_PATH)
 
 lint: test-install
@@ -67,7 +65,6 @@ test: install test-install
 	$(MANAGE) test $(MODULE_PATH)
 
 test-install: virtualenv $(TEST_REQ_FILE_PATH)
-	$(PIP) install $(pip_caching_option) $(PYXUS_REPO) --upgrade
 	$(PIP) install $(pip_caching_option) -r $(TEST_REQ_FILE_PATH)
 
 virtualenv:
@@ -83,4 +80,5 @@ doc-install: virtualenv $(DOC_REQ_FILE_PATH)
 package:
 	cd $(SRC_PATH) && \
 	python $(SRC_PATH)/setup.py sdist
+	python $(SRC_PATH)/setup.py bdist_wheel --universal
 
