@@ -2,7 +2,7 @@ import os
 import requests
 from requests import Request
 
-from http_client.auth_client.auth_client import AbstractAuthClient
+from pyxus_http_client.auth_client.auth_client import AbstractAuthClient
 
 
 class OpenIDAuthClient(AbstractAuthClient):

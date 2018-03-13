@@ -1,6 +1,6 @@
-SRC_PATH := $(CURDIR)/http_client
-MODULE_PATH := $(SRC_PATH)/http_client
-PACKAGE :=http_client
+SRC_PATH := $(CURDIR)/pyxus_http_client
+MODULE_PATH := $(SRC_PATH)/pyxus_http_client
+PACKAGE :=pyxus_http_client
 
 REQ_FILE_PATH := $(SRC_PATH)/requirements.txt
 TEST_REQ_FILE_PATH := $(SRC_PATH)/requirements_extension_tests.txt
@@ -45,6 +45,7 @@ clean:
 	-rm -rf $(DIST)
 	-rm -rf $(SRC_PATH)/*.egg-info
 	-rm -rf $(SRC_PATH)/dist
+	-rm -rf $(SRC_PATH)/build
 
 ifdef GITLAB_CACHING
 virtualenv_caching_option := --always-copy
@@ -78,6 +79,6 @@ doc-install: virtualenv $(DOC_REQ_FILE_PATH)
 	$(PIP) install $(pip_caching_option) -r $(DOC_REQ_FILE_PATH)
 
 package:
-	cd $(SRC_PATH) && \
-	python $(SRC_PATH)/setup.py sdist
+	cd $(SRC_PATH) && python setup.py sdist
+	cd $(SRC_PATH) && python setup.py bdist_wheel
 
