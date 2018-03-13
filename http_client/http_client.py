@@ -14,7 +14,7 @@ class HttpClient(object):
 
     headers = {}
 
-    def __init__(self, endpoint, prefix, auth_client, raw=False):
+    def __init__(self, endpoint, prefix, auth_client=None, raw=False):
         self.raw = raw
         self._prefix = prefix
         self.auth_client = auth_client
@@ -56,7 +56,8 @@ class HttpClient(object):
             data = json.dumps(data)
         original_headers = headers
         headers = headers or {}
-        headers.update(self.auth_client.get_headers())
+        if self.auth_client is not None:
+            headers.update(self.auth_client.get_headers())
         req = Request(method_name, full_url, data=data, headers=headers)
         prepped_request = self.req_session.prepare_request(req)
         response = self.req_session.send(prepped_request, timeout=30)
@@ -72,8 +73,9 @@ class HttpClient(object):
                 LOGGER.error(
                     "ERROR - Refreshing token {} {}: {} {}".format(method_name.upper(), response.status_code, full_url,
                                                 response))
-                self.auth_client.refresh_token()
-                self._request(method_name, endpoint_url, data, original_headers, can_retry=False)
+                if self.auth_client is not None:
+                    self.auth_client.refresh_token()
+                    self._request(method_name, endpoint_url, data, original_headers, can_retry=False)
             else:
                 LOGGER.debug("SUCCESS {} {}: {} {}".format(method_name.upper(), response.status_code, full_url, json.dumps(data)))
             return self._handle_response(response)
@@ -107,8 +109,4 @@ class HttpClient(object):
         return self._request('patch', *args, **kwargs)
 
     def delete(self, endpoint_url):
-        full_url = self._create_full_url(endpoint_url)
-        headers = {}
-        headers.update(self.headers)
-        response = self.req_session.delete(full_url, headers=headers)
-        return self._handle_response(response)
+        return self._request('delete', endpoint_url)

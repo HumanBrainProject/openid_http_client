@@ -1,4 +1,4 @@
-from oidc_login_client.auth_client.auth_client import AbstractAuthClient
+from http_client.auth_client import AbstractAuthClient
 
 
 class BasicAuthClient(AbstractAuthClient):
@@ -13,4 +13,4 @@ class BasicAuthClient(AbstractAuthClient):
         return {'Authorization': 'Bearer {}'.format(self.token)}
 
     def refresh_token(self, old_token=None):
-        return ''
+        return old_token

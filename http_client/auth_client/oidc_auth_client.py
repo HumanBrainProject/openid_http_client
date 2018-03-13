@@ -1,6 +1,8 @@
+import os
 import requests
 
-from oidc_login_client.auth_client.auth_client import AbstractAuthClient
+from stat import S_IREAD, S_IWRITE
+from http_client.auth_client.auth_client import AbstractAuthClient
 
 
 class HBPOidcAuthClient(AbstractAuthClient):
@@ -11,16 +13,16 @@ class HBPOidcAuthClient(AbstractAuthClient):
     refresh_token_file_path = 'refresh_token'
     scope = 'openid profile offline_access'
 
-    def __init__(self, token=None):
+    def __init__(self, refresh_token=None):
         self.client_secret = None
         self.client_id = None
-        if token is not None and self.validate_token(token) :
-            self.save_token(token)
-            self.token = token
+        if refresh_token is not None and self.validate_token(refresh_token):
+            self.save_token(refresh_token)
+            self.token = refresh_token
         else:
             self.token = self._get_refresh_token_from_file()
 
-    def set_client_credentials(self,client_id, client_secret):
+    def set_client_credentials(self, client_id, client_secret):
         self.client_secret = client_secret
         self.client_id = client_id
 
@@ -29,6 +31,15 @@ class HBPOidcAuthClient(AbstractAuthClient):
             with open(self.refresh_token_file_path) as refresh_token_file:
                 return refresh_token_file.readline()
         except Exception as e:
+            return None
+
+    def save_token(self, token):
+        try:
+            with open(self.refresh_token_file_path, 'wt') as refresh_token_file:
+                os.chmod(self.refresh_token_file_path,  0o600)
+                refresh_token_file.write(token)
+        except Exception as e:
+            print e
             return None
 
     def exchange_code_for_token(self, code, redirect_uri):
@@ -47,15 +58,10 @@ class HBPOidcAuthClient(AbstractAuthClient):
         }
 
         res = requests.get('{}/{}'.format(self.host, self.token_endpoint), params=params)
-
-        return res.json()['refresh_token']
-
-    def save_token(self, token):
-        try:
-            with open(self.refresh_token_file_path, 'w') as refresh_token_file:
-                refresh_token_file.write(token)
-        except Exception as e:
-            return None
+        if res.status_code == 200:
+            return res.json()['refresh_token']
+        else:
+            raise Exception('Could not get the refresh token. {}'.format(res.content))
 
     def get_token(self):
         if self.token is None:
@@ -91,11 +97,13 @@ class HBPOidcAuthClient(AbstractAuthClient):
             'grant_type': 'refresh_token'
         }
         res = requests.get('{}/{}'.format(self.host, self.token_endpoint), params=params)
-        token = res.json()['refresh_token']
-        self.save_token(token)
-        self.token = token
-        return token
-
+        if res.status_code == 200:
+            token = res.json()['refresh_token']
+            self.save_token(token)
+            self.token = token
+            return token
+        else:
+            raise Exception('Could not refresh the token. {}'.format(res.content))
 
 # oidc = HBPOidcAuthClient()
 #

@@ -1,4 +1,3 @@
-
 class AbstractAuthClient(object):
 
     def __init(self):
