@@ -39,7 +39,7 @@ export HELPTEXT
 help:
 	@echo "$$HELPTEXT"
 
-clean:
+clean: 
 	-rm -rf $(VIRTUAL_ENV)
 	-rm pylint.txt
 	-rm -rf $(DIST)
