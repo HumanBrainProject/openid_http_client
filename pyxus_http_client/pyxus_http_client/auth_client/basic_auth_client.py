@@ -2,7 +2,10 @@ from pyxus_http_client.auth_client.auth_client import AbstractAuthClient
 
 
 class BasicAuthClient(AbstractAuthClient):
+    """
+    Basic Auth client
 
+    """
     def __init__(self, token):
         self.token = token
 

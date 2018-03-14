@@ -23,6 +23,11 @@ class HttpClient(object):
         self.api_root = '{}/{}'.format(endpoint, prefix)
 
     def _create_full_url(self, endpoint_url):
+        """
+        Create complete endpoint
+        :param endpoint_url: the path or the url
+        :return: the full url
+        """
         if endpoint_url.startswith(self.api_root):
             full_url = endpoint_url
         else:
@@ -50,6 +55,17 @@ class HttpClient(object):
             return response.raise_for_status()
 
     def _request(self, method_name, endpoint_url, data=None, headers=None, can_retry=True):
+        """
+        Making an http call with a specific method
+        In case of an Unauthorized response. The auth client will refresh the token and send the
+        request again
+        :param method_name:
+        :param endpoint_url:
+        :param data:
+        :param headers:
+        :param can_retry:
+        :return: the response of the http request
+        """
         if endpoint_url.startswith('http'):
             endpoint_url = self.transform_url_to_defined_endpoint(endpoint_url)
         full_url = self._create_full_url(endpoint_url)

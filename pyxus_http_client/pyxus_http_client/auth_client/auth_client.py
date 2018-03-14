@@ -1,5 +1,7 @@
 class AbstractAuthClient(object):
-
+    """
+    Abstract class for auth client implementation
+    """
     def __init(self):
         pass
 

@@ -31,6 +31,10 @@ class OpenIDAuthClient(AbstractAuthClient):
         self.client_id = client_id
 
     def _fetch_endpoints(self):
+        """
+        Fetching meaningful endpoints for Open ID calls
+        :return dict: the endpoints path
+        """
         res = self.__http_requests('get',
                                    '{}/{}'.format(self.host, self.endpoints['configuration']))
         j = res.json()
@@ -40,6 +44,10 @@ class OpenIDAuthClient(AbstractAuthClient):
         return result
 
     def _get_refresh_token_from_file(self):
+        """
+        Retrieve the refresh token from a file
+        :return: the refresh token
+        """
         try:
             with open(self.refresh_token_file_path) as refresh_token_file:
                 return refresh_token_file.readline()
@@ -48,6 +56,11 @@ class OpenIDAuthClient(AbstractAuthClient):
             return None
 
     def save_token(self, token):
+        """
+        Saving the refresh token to a file
+        :param token: the token to save
+        :return: None
+        """
         try:
             with open(self.refresh_token_file_path, 'wt') as refresh_token_file:
                 os.chmod(self.refresh_token_file_path, 0o600)
@@ -57,11 +70,23 @@ class OpenIDAuthClient(AbstractAuthClient):
             return None
 
     def exchange_code_for_token(self, code, redirect_uri):
+        """
+        If no token are provided. We can request for one by providing a code and the redirect uri
+        :param code:
+        :param redirect_uri:
+        :return:
+        """
         token = self.request_refresh_token(code, redirect_uri)
         self.save_token(token)
         self.refresh_token = token
 
     def request_refresh_token(self, code, redirect_uri):
+        """
+        Http request for a new refresh token
+        :param code:
+        :param redirect_uri:
+        :return:
+        """
         params = {
             'code': code,
             'client_id': self.client_id,
@@ -91,6 +116,11 @@ class OpenIDAuthClient(AbstractAuthClient):
         return {'Authorization': 'Bearer {}'.format(self.token)}
 
     def validate_token(self, token):
+        """
+        Verify if the token is valid by making a call to the userinfo endpoint
+        :param token:
+        :return bool: True if the token is valid, False otherwise
+        """
         headers = {'Authorization': 'Bearer {}'.format(token)}
         res = self.__http_requests('get', '{}/{}'.format(self.host, self.endpoints['userinfo']),
                                    headers=headers)
@@ -123,6 +153,15 @@ class OpenIDAuthClient(AbstractAuthClient):
             raise Exception('Could not refresh the token. {}'.format(res.content))
 
     def __http_requests(self, method_name, full_url, headers=None, params=None, data=None):
+        """
+        Generic http request
+        :param method_name:
+        :param full_url:
+        :param headers:
+        :param params:
+        :param data:
+        :return:
+        """
         session = requests.session()
         request = Request(method_name, full_url, headers, params=params, data=data)
 
