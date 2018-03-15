@@ -6,14 +6,11 @@ python:
 - '3.5'
 install:
   - make install
-  - pip install codecov
-  - pip install coverage
 after_success:
   - codecov
 script:
   - make lint || echo "linting failed"
   - make test
-  - coverage run --source=openid_http_client/openid_http_client -m unittest discover -s openid_http_client/openid_http_client/test
 before_deploy:
   - cd openid_http_client
 deploy:
