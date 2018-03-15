@@ -6,8 +6,6 @@ python:
 - '3.5'
 install:
   - make install
-after_success:
-  - codecov
 script:
   - make lint || echo "linting failed"
   - make test
