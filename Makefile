@@ -1,6 +1,6 @@
-SRC_PATH := $(CURDIR)/pyxus_http_client
-MODULE_PATH := $(SRC_PATH)/pyxus_http_client
-PACKAGE :=pyxus_http_client
+SRC_PATH := $(CURDIR)/openid_http_client
+MODULE_PATH := $(SRC_PATH)/openid_http_client
+PACKAGE :=openid_http_client
 
 REQ_FILE_PATH := $(SRC_PATH)/requirements.txt
 TEST_REQ_FILE_PATH := $(SRC_PATH)/requirements_extension_tests.txt
