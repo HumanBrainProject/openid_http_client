@@ -41,7 +41,7 @@ setup(
     author_email = 'platform@humanbrainproject.eu',
     keywords = ['OpenID', 'http', 'client'],
     classifiers = [],
-    url = 'https://gitlab.humanbrainproject.org/HumanBrainProject/pyxus_http_client',
-    download_url = 'https://gitlab.humanbrainproject.org/HumanBrainProject/pyxus_http_client/repository/master/archive.zip',
+    url = 'https://github.com/HumanBrainProject/openid_http_client',
+    download_url = 'https://github.com/HumanBrainProject/openid_http_client/archive/master.zip',
     long_description = long_description
 )
