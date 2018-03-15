@@ -1,4 +1,4 @@
-#   Copyright 2018 HumanBrainProject
+#   Copyright (c) 2018, EPFL/Human Brain Project PCO
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -11,7 +11,6 @@
 #   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
-
 import logging
 
 import curlify
@@ -80,8 +79,6 @@ class HttpClient(object):
         :param can_retry:
         :return: the response of the http request
         """
-        if endpoint_url.startswith('http'):
-            endpoint_url = self.transform_url_to_defined_endpoint(endpoint_url)
         full_url = self._create_full_url(endpoint_url)
         if type(data) is dict or type(data) is list:
             data = json.dumps(data)

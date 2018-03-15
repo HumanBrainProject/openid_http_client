@@ -37,7 +37,7 @@ setup(
     install_requires = reqs,
     scripts=['manage.py'],
     description = 'HTTP Client with auth for Pyxus',
-    author = 'HPB Team',
+    author = 'HumanBrainProject',
     author_email = 'platform@humanbrainproject.eu',
     keywords = ['pyxus', 'http', 'client'],
     classifiers = [],

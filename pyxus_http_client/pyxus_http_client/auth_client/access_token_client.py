@@ -15,9 +15,9 @@
 from pyxus_http_client.auth_client.auth_client import AbstractAuthClient
 
 
-class BasicAuthClient(AbstractAuthClient):
+class AccessTokenClient(AbstractAuthClient):
     """
-    Basic Auth client
+    Access Token client
 
     """
     def __init__(self, token):
