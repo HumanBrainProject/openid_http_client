@@ -12,7 +12,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-from pyxus_http_client.auth_client.auth_client import AbstractAuthClient
+from openid_http_client.auth_client.auth_client import AbstractAuthClient
 
 
 class AccessTokenClient(AbstractAuthClient):

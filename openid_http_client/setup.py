@@ -31,15 +31,15 @@ else:  # this is the production path, running on RHEL
 reqs = [str(ir.req) for ir in INSTALL_REQS]
 
 setup(
-    name='pyxus_http_client',
+    name='openid_http_client',
     version='0.0.8',
-    packages=['pyxus_http_client', 'pyxus_http_client.auth_client'],
+    packages=['openid_http_client', 'openid_http_client.auth_client'],
     install_requires = reqs,
     scripts=['manage.py'],
-    description = 'HTTP Client with auth for Pyxus',
+    description = 'OpenID HTTP Client with auth',
     author = 'HumanBrainProject',
     author_email = 'platform@humanbrainproject.eu',
-    keywords = ['pyxus', 'http', 'client'],
+    keywords = ['OpenID', 'http', 'client'],
     classifiers = [],
     url = 'https://gitlab.humanbrainproject.org/HumanBrainProject/pyxus_http_client',
     download_url = 'https://gitlab.humanbrainproject.org/HumanBrainProject/pyxus_http_client/repository/master/archive.zip',
