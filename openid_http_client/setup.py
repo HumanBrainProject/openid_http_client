@@ -5,12 +5,6 @@ from setuptools import setup
 import pip
 from pip.req import parse_requirements
 
-try:
-    import pypandoc
-    long_description = pypandoc.convert('../README.md', 'rst')
-except(IOError, ImportError):
-    long_description = open('../README.md').read()
-
 # This is a hack to work with newer versions of pip
 if (pip.__version__.startswith('1.5') or
    int(pip.__version__[:1]) > 5):
@@ -32,7 +26,7 @@ reqs = [str(ir.req) for ir in INSTALL_REQS]
 
 setup(
     name='openid_http_client',
-    version='0.0.9',
+    version='0.0.10',
     packages=['openid_http_client', 'openid_http_client.auth_client'],
     install_requires = reqs,
     scripts=['manage.py'],
@@ -42,6 +36,5 @@ setup(
     keywords = ['OpenID', 'http', 'client'],
     classifiers = [],
     url = 'https://github.com/HumanBrainProject/openid_http_client',
-    download_url = 'https://github.com/HumanBrainProject/openid_http_client/archive/master.zip',
-    long_description = long_description
+    download_url = 'https://github.com/HumanBrainProject/openid_http_client/archive/master.zip'
 )
