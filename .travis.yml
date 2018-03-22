@@ -19,5 +19,5 @@ deploy:
   server: https://test.pypi.org/legacy/
   on:
     all_branches: true
-    condition: "$TRAVIS_BRANCH =~ ^release\/v[0-9]*\.[0-9]*$"
+    condition: "$TRAVIS_BRANCH =~ ^release/v[0-9]*\\.[0-9]*$"
 
