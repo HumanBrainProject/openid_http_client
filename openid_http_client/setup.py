@@ -7,10 +7,12 @@ if os.path.exists("../README.md"):
         long_description = pypandoc.convert('../README.md', 'rst')
     except(IOError, ImportError):
         long_description = open('../README.md').read()
+else:
+    long_description = "This library provides an Http client for Pyxus with support of OpenID token authentication."
 
 setup(
     name='openid_http_client',
-    version='0.0.12',
+    version='0.0.13',
     packages=['openid_http_client', 'openid_http_client.auth_client'],
     install_requires = ["requests", "curlify"],
     scripts=['manage.py'],
