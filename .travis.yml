@@ -4,6 +4,7 @@ python:
 - '3.3'
 - '3.4'
 - '3.5'
+
 jobs:
   include:
     - stage: test
@@ -23,7 +24,6 @@ jobs:
           all_branches: true
           condition: "$TRAVIS_BRANCH =~ ^release/v[0-9]*\\.[0-9]*$"
 stages:
-  - install
   - test
   - deploy
 
