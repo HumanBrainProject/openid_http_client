@@ -32,7 +32,7 @@ reqs = [str(ir.req) for ir in INSTALL_REQS]
 
 setup(
     name='openid_http_client',
-    version='0.0.8',
+    version='0.0.9',
     packages=['openid_http_client', 'openid_http_client.auth_client'],
     install_requires = reqs,
     scripts=['manage.py'],
