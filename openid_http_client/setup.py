@@ -10,7 +10,7 @@ if os.path.exists("../README.md"):
 
 setup(
     name='openid_http_client',
-    version='0.0.11',
+    version='0.0.12',
     packages=['openid_http_client', 'openid_http_client.auth_client'],
     install_requires = ["requests", "curlify"],
     scripts=['manage.py'],
