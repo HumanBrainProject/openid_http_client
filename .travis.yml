@@ -6,9 +6,8 @@ python:
 - '3.5'
 jobs:
   include:
-    - stage: install
-      script: make install
     - stage: test
+      script: make install
       script: make lint || echo "linting failed"
       script: make test
     - stage: deploy
