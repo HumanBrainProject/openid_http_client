@@ -4,20 +4,27 @@ python:
 - '3.3'
 - '3.4'
 - '3.5'
-install:
-  - make install
-script:
-  - make lint || echo "linting failed"
-  - make test
-before_deploy:
-  - cd openid_http_client
-deploy:
-  provider: pypi
-  user: hbp_platform
-  password:
-    secure: "BSpAJWgMAsJJkqw8MWenzOiVKXhjBtjdTweiwMpQgI7flwfR8LkVBeQNmD33ugFoqyeAXr4DtVu3nGOaqQJyQ2RfDvcjjztD5RDS/CnBkYdBDv/jZiBqOolWbwFzJAi1BerPf0VLUQkv7r4ULWpMfWC8jmQoHySTr9TLFS43eY9t5wBfZzCqUT6ZmATOTQMjfWJ+P3m+TfI4LMR7M8W0OHr0ZCLJLh7ufZ0a60e0j6brfIoqnp+D/pjxycwlVlbjeXXu/FwXcPiKHpFH3sqpAVov7cXuN1S2qBKMyroy5QHlzMU52OVRISbkFxHZDNK6tq6bAA1qwRebkrUo/ExHaahmXpNSQ/5oyf9hWvFO1C2OrYj75QG4u38Nkmf765yRzN6wQuRBkeUg/yIQvnccDKh+ZWphIqtHdx9e32Yk9uf8c+fzlmdEKGpoaQ5UElK8KEls4KZd4KDo7B87VAyYKq1zJMXgw8JQCYoQiSAOs2dX3XZ0BPN/yiB6KYEZLLNMfTd+Bi1mzHItBRh+aCwBEU0Dbi4mNazep10THEG6smw9DrdOicwUg2hWI1n4xkVUR+usICTD0+hnVcJrBOzwSmAdi0Ycnrw+b6tNBS11ToXHXLm8A/AjhnR/M01pSgNBjUOrOy5mPDMsl1Weay1xLC+DG4UkbSoCs1x6Hhb9RDY="
-  server: https://test.pypi.org/legacy/
-  on:
-    all_branches: true
-    condition: "$TRAVIS_BRANCH =~ ^release/v[0-9]*\\.[0-9]*$"
+jobs:
+  include:
+    - stage: install
+      script: make install
+    - stage: test
+      script: make lint || echo "linting failed"
+      script: make test
+    - stage: deploy
+      python: 2.7
+      script: cd openid_http_client
+      deploy:
+        provider: pypi
+        user: hbp_platform
+        password:
+          secure: "BSpAJWgMAsJJkqw8MWenzOiVKXhjBtjdTweiwMpQgI7flwfR8LkVBeQNmD33ugFoqyeAXr4DtVu3nGOaqQJyQ2RfDvcjjztD5RDS/CnBkYdBDv/jZiBqOolWbwFzJAi1BerPf0VLUQkv7r4ULWpMfWC8jmQoHySTr9TLFS43eY9t5wBfZzCqUT6ZmATOTQMjfWJ+P3m+TfI4LMR7M8W0OHr0ZCLJLh7ufZ0a60e0j6brfIoqnp+D/pjxycwlVlbjeXXu/FwXcPiKHpFH3sqpAVov7cXuN1S2qBKMyroy5QHlzMU52OVRISbkFxHZDNK6tq6bAA1qwRebkrUo/ExHaahmXpNSQ/5oyf9hWvFO1C2OrYj75QG4u38Nkmf765yRzN6wQuRBkeUg/yIQvnccDKh+ZWphIqtHdx9e32Yk9uf8c+fzlmdEKGpoaQ5UElK8KEls4KZd4KDo7B87VAyYKq1zJMXgw8JQCYoQiSAOs2dX3XZ0BPN/yiB6KYEZLLNMfTd+Bi1mzHItBRh+aCwBEU0Dbi4mNazep10THEG6smw9DrdOicwUg2hWI1n4xkVUR+usICTD0+hnVcJrBOzwSmAdi0Ycnrw+b6tNBS11ToXHXLm8A/AjhnR/M01pSgNBjUOrOy5mPDMsl1Weay1xLC+DG4UkbSoCs1x6Hhb9RDY="
+        server: https://test.pypi.org/legacy/
+        on:
+          all_branches: true
+          condition: "$TRAVIS_BRANCH =~ ^release/v[0-9]*\\.[0-9]*$"
+stages:
+  - install
+  - test
+  - deploy
 
