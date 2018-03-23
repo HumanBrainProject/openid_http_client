@@ -4,11 +4,11 @@ python:
 - '3.3'
 - '3.4'
 - '3.5'
-
+install:
+  - make install
 jobs:
   include:
     - stage: test
-      script: make install
       script: make lint || echo "linting failed"
       script: make test
     - stage: deploy
