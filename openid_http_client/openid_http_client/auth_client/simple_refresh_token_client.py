@@ -16,7 +16,7 @@
 import requests
 from requests import Request
 
-from openid_http_client.openid_http_client.auth_client.auth_client import AbstractAuthClient
+from openid_http_client.auth_client.auth_client import AbstractAuthClient
 
 
 def http_requests(method_name, full_url, headers=None, params=None, data=None):
