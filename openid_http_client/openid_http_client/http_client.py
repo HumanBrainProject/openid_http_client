@@ -21,7 +21,7 @@ from requests.exceptions import HTTPError
 import requests
 import json
 
-LOGGER = logging.getLogger(__package__)
+LOGGER = logging.getLogger("http")
 CURL_LOGGER = logging.getLogger("curl")
 
 
