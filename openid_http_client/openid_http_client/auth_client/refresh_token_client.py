@@ -33,13 +33,13 @@ class RefreshTokenClient(AbstractAuthClient):
         self.client_secret = client_secret
         self.client_id = client_id
         self.refresh_token_file_path = refresh_token_file_path
+        self.endpoints = self._fetch_endpoints()
         if refresh_token is not None and self.validate_token(refresh_token):
             self.save_token(refresh_token)
             self.token = refresh_token
         else:
             self.token = self._get_refresh_token_from_file()
 
-        self.endpoints = self._fetch_endpoints()
 
     def set_client_credentials(self, client_id, client_secret):
         self.client_secret = client_secret
