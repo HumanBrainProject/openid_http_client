@@ -42,7 +42,8 @@ class HttpClient(object):
         :param endpoint_url: the path or the url
         :return: the full url
         """
-        if endpoint_url.startswith(self.api_root):
+        #We need to make sure, that the request (including the access token) is not directed to an unknown host. We therefore only send it either to the api_root or to the local machine.
+        if endpoint_url.startswith(self.api_root) or endpoint_url.startswith("http://localhost"):
             full_url = endpoint_url
         else:
             full_url = '{api_root}{endpoint_url}'.format(
