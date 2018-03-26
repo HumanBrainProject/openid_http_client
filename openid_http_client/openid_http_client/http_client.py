@@ -28,13 +28,14 @@ CURL_LOGGER = logging.getLogger("curl")
 class HttpClient(object):
     headers = {}
 
-    def __init__(self, endpoint, prefix, auth_client=None, raw=False):
+    def __init__(self, endpoint, prefix, auth_client=None, raw=False, alternative_endpoint_writing=None):
         self.raw = raw
         self._prefix = prefix
         self.auth_client = auth_client
         self.req_session = requests.session()
         self.req_session.headers = {"Content-type": "application/json"}
         self.api_root = '{}/{}'.format(endpoint, prefix)
+        self.alternative_endpoint_writing = alternative_endpoint_writing
 
     def _create_full_url(self, endpoint_url):
         """
@@ -43,7 +44,7 @@ class HttpClient(object):
         :return: the full url
         """
         #We need to make sure, that the request (including the access token) is not directed to an unknown host. We therefore only send it either to the api_root or to the local machine.
-        if endpoint_url.startswith(self.api_root) or endpoint_url.startswith("http://localhost"):
+        if endpoint_url.startswith(self.api_root) or (self.alternative_endpoint_writing is not None and endpoint_url.startswith(self.alternative_endpoint_writing)):
             full_url = endpoint_url
         else:
             full_url = '{api_root}{endpoint_url}'.format(
