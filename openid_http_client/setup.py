@@ -26,7 +26,7 @@ else:
 
 setup(
     name='openid_http_client',
-    version='0.0.19',
+    version='0.0.20',
     packages=['openid_http_client', 'openid_http_client.auth_client'],
     install_requires = ["requests", "curlify"],
     scripts=['manage.py'],
