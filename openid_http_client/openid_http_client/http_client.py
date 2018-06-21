@@ -21,14 +21,13 @@ from requests.exceptions import HTTPError
 import requests
 import json
 
-LOGGER = logging.getLogger("http")
-CURL_LOGGER = logging.getLogger("curl")
-
 
 class HttpClient(object):
     headers = {}
 
     def __init__(self, endpoint, prefix, auth_client=None, raw=False, alternative_endpoint_writing=None):
+        self.logger = logging.getLogger(__name__)
+        self.curl_logger = logging.getLogger("curl_{}".format(__name__))
         self.raw = raw
         self._prefix = prefix
         self.auth_client = auth_client
@@ -67,7 +66,7 @@ class HttpClient(object):
             else:
                 return response.json()
         else:
-            LOGGER.debug('returned %s %s', response.status_code, response.content)
+            self.logger.debug('returned %s %s', response.status_code, response.content)
             return response.raise_for_status()
 
     def _request(self, method_name, endpoint_url, data=None, headers=None, can_retry=True):
@@ -92,18 +91,18 @@ class HttpClient(object):
         req = Request(method_name, full_url, data=data, headers=headers)
         prepped_request = self.req_session.prepare_request(req)
         response = self.req_session.send(prepped_request, timeout=30)
-        CURL_LOGGER.info(curlify.to_curl(response.request))
+        self.curl_logger.debug(curlify.to_curl(response.request))
         try:
             if response.status_code >= 500:
                 error = HTTPError()
                 error.response = response
                 raise error
             elif response.status_code > 401:
-                LOGGER.error(
+                self.logger.debug(
                     "ERROR {} {}: {} {}".format(method_name.upper(), response.status_code, full_url,
                                                 response))
             elif response.status_code == 401 and can_retry:
-                LOGGER.error(
+                self.logger.debug(
                     "ERROR - Refreshing token {} {}: {} {}".format(method_name.upper(),
                                                                    response.status_code, full_url,
                                                                    response))
@@ -112,27 +111,26 @@ class HttpClient(object):
                     self._request(method_name, endpoint_url, data, original_headers,
                                   can_retry=False)
             else:
-                LOGGER.debug(
+                self.logger.debug(
                     "SUCCESS {} {}: {} {}".format(method_name.upper(), response.status_code,
                                                   full_url, json.dumps(data)))
             return self._handle_response(response)
         except HTTPError as e:
-            LOGGER.debug('request:%s %s\n%r', method_name, full_url, data)
-            LOGGER.error(
+            self.logger.debug('request:%s %s\n%r', method_name, full_url, data)
+            self.logger.warning(
                 "ERROR {} ({}): {} {} {} {}".format(method_name.upper(), e.response.status_code,
                                                     full_url, json.dumps(data), e.response.content,
                                                     e.response.text))
             raise (e)
 
-    @staticmethod
-    def _direct_request(method_name, full_url, data=None, headers=None):
-        LOGGER.debug('%s %s\n%r', method_name, full_url, data)
+    def _direct_request(self, method_name, full_url, data=None, headers=None):
+        self.logger.debug('%s %s\n%r', method_name, full_url, data)
         method = getattr(requests, method_name)
         headers = headers or {}
         headers.update(headers)
-        LOGGER.debug('request:%s %s\n%r', method_name, full_url, data)
+        self.logger.debug('request:%s %s\n%r', method_name, full_url, data)
         response = method(full_url, str(data), headers=headers)
-        LOGGER.debug('returned %s', response.status_code)
+        self.logger.debug('returned %s', response.status_code)
         return response
 
     def put(self, *args, **kwargs):
