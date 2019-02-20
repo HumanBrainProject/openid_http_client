@@ -97,19 +97,20 @@ class HttpClient(object):
                 error = HTTPError()
                 error.response = response
                 raise error
-            elif response.status_code > 401:
-                self.logger.debug(
-                    "ERROR {} {}: {} {}".format(method_name.upper(), response.status_code, full_url,
-                                                response))
-            elif response.status_code == 401 and can_retry:
+
+            elif (response.status_code == 401 or response.status_code == 403) and can_retry:
                 self.logger.debug(
                     "ERROR - Refreshing token {} {}: {} {}".format(method_name.upper(),
                                                                    response.status_code, full_url,
                                                                    response))
                 if self.auth_client is not None:
                     self.auth_client.refresh_token()
-                    self._request(method_name, endpoint_url, data, original_headers,
+                    return self._request(method_name, endpoint_url, data, original_headers,
                                   can_retry=False)
+            elif response.status_code > 403:
+                self.logger.debug(
+                    "ERROR {} {}: {} {}".format(method_name.upper(), response.status_code, full_url,
+                                                response))
             else:
                 self.logger.debug(
                     "SUCCESS {} {}: {} {}".format(method_name.upper(), response.status_code,
