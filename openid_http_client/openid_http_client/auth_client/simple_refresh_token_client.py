@@ -44,12 +44,13 @@ class SimpleRefreshTokenClient(AbstractAuthClient):
 
     scope = 'openid profile offline_access'
 
-    def __init__(self, openid_host, client_secret, client_id, refresh_token):
+    def __init__(self, openid_host, client_secret, client_id, refresh_token, refresh_token_method='get'):
         self.host = openid_host
         self.client_secret = client_secret
         self.client_id = client_id
         self.endpoints = self._fetch_endpoints()
         self.refr_token = refresh_token
+        self.refr_token_method = refresh_token_method
         self.access_token = self.refresh_token()
 
     def _fetch_endpoints(self):
@@ -116,7 +117,12 @@ class SimpleRefreshTokenClient(AbstractAuthClient):
             'refresh_token': self.refr_token if old_refresh_token is None else old_refresh_token,
             'grant_type': 'refresh_token'
         }
-        res = http_requests('get', self.endpoints['token'], params=params)
+        if self.refr_token_method == 'get':
+          res = http_requests('get', self.endpoints['token'], params=params)
+        elif self.refr_token_method == 'post':
+          res = http_requests('post', self.endpoints['token'], data=params)
+        else:
+          raise Exception('Unknown refresh_token_method: {}. Must be "get" or "post"'.format(self.refr_token_method))
         if res.status_code == 200:
             self.refr_token = res.json()['refresh_token']
             self.access_token = res.json()['access_token']
