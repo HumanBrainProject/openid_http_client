@@ -63,7 +63,7 @@ class ClientCredentialsClient(AbstractAuthClient):
             'client_secret': self.client_secret,
             'grant_type': 'client_credentials'
         }
-        res = self.__http_requests('post', '{}/{}'.format(self.host, self.endpoints['token']), data=data)
+        res = self.__http_requests('post', self.endpoints['token'], data=data)
         if res.status_code == 200:
             token = res.json()['access_token']
             self.token = token
