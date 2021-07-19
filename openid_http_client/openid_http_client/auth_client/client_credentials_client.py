@@ -30,6 +30,7 @@ class ClientCredentialsClient(AbstractAuthClient):
         self.client_secret = client_secret
         self.client_id = client_id
         self.endpoints = self._fetch_endpoints()
+        self.token = None
 
     def get_token(self):
         if self.token is None:
